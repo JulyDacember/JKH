@@ -56,7 +56,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
               selectedIcon: Icons.notifications,
               label: 'Notification',
               index: 3,
-              badge: notificationCount > 0 ? notificationCount.toString() : null,
+              badge:
+                  notificationCount > 0 ? notificationCount.toString() : null,
             ),
           ],
         ),
@@ -81,9 +82,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             children: [
               Icon(
                 isSelected ? selectedIcon : icon,
-                color: isSelected
-                    ? const Color(0xFF1E3A8A)
-                    : Colors.grey,
+                color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey,
                 size: 24,
               ),
               if (badge != null)
@@ -118,9 +117,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 10,
-              color: isSelected
-                  ? const Color(0xFF1E3A8A)
-                  : Colors.grey,
+              color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -129,4 +126,3 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 }
-

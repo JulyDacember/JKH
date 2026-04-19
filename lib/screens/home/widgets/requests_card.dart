@@ -120,11 +120,7 @@ class _RequestsCardState extends State<RequestsCard>
             color: Color(0xFF1E3A8A),
           ),
         ),
-        Icon(
-          Icons.arrow_forward_ios,
-          size: 16,
-          color: Colors.grey,
-        ),
+        Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       ],
     );
   }
@@ -145,13 +141,7 @@ class _RequestsCardState extends State<RequestsCard>
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
-        ),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
   }

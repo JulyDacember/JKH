@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart';
+import '../../repositories/app_repository.dart';
 import '../../models/balance.dart';
 import '../../models/request.dart';
 import '../../models/user.dart';
+import '../../models/activity.dart';
 import '../requests/requests_list_screen.dart';
 import '../payments/payments_screen.dart';
 import '../auth/login_screen.dart';
+import '../auth/profile_screen.dart';
+import '../auth/settings_screen.dart';
 import 'widgets/balance_card.dart';
 import 'widgets/requests_card.dart';
 import 'widgets/quick_actions.dart';
 import 'widgets/bottom_navigation_bar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/snackbar_helper.dart';
+import '../../services/session_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,6 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
   late User _currentUser;
   late Balance _currentBalance;
   late List<MaintenanceRequest> _requests;
+  int _notificationCount = 0;
+  bool _isDataLoading = true;
+  final SessionService _sessionService = SessionService();
+  final AppRepository _repository = AppRepository.instance;
 
   @override
   void initState() {
@@ -32,10 +39,37 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadData();
   }
 
-  void _loadData() {
-    _currentUser = MockDataService.getCurrentUser();
-    _currentBalance = MockDataService.getCurrentBalance();
-    _requests = MockDataService.getRequests();
+  Future<void> _loadData() async {
+    try {
+      _currentUser = await _repository.loadCurrentUser();
+      _currentBalance = await _repository.loadCurrentBalance();
+      _requests = await _repository.loadRequests();
+      final activities = await _repository.loadRecentActivities();
+      _notificationCount = activities
+          .where(
+            (activity) =>
+                activity.status == ActivityStatus.pending ||
+                activity.status == ActivityStatus.inProgress,
+          )
+          .length;
+    } catch (_) {
+      _currentUser = _repository.getCurrentUser();
+      _currentBalance = _repository.getCurrentBalance();
+      _requests = _repository.getRequests();
+      _notificationCount = _repository
+          .getRecentActivities()
+          .where(
+            (activity) =>
+                activity.status == ActivityStatus.pending ||
+                activity.status == ActivityStatus.inProgress,
+          )
+          .length;
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isDataLoading = false;
+      });
+    }
   }
 
   void _onTabTapped(int index) {
@@ -72,10 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 16),
           const Text(
             'No new notifications',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
-            ),
+            style: TextStyle(fontSize: 18, color: Colors.grey),
           ),
         ],
       ),
@@ -108,6 +139,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isDataLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       body: Column(
         children: [
@@ -126,12 +161,15 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
-        notificationCount: 3,
+        notificationCount: _notificationCount,
       ),
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton(
               onPressed: () {
-                SnackbarHelper.showSuccess(context, 'Быстрое действие выполнено');
+                SnackbarHelper.showSuccess(
+                  context,
+                  'Быстрое действие выполнено',
+                );
               },
               backgroundColor: Colors.orange,
               child: const Icon(Icons.add, color: Colors.white),
@@ -155,10 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const Text(
                     'Current Property',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                   Row(
                     children: [
@@ -171,10 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.white,
-                      ),
+                      const Icon(Icons.arrow_drop_down, color: Colors.white),
                     ],
                   ),
                 ],
@@ -200,8 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       minWidth: 16,
                       minHeight: 16,
                     ),
-                    child: const Text(
-                      '3',
+                    child: Text(
+                      _notificationCount.toString(),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -242,7 +274,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: const Text('Profile'),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to profile
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  );
                 },
               ),
               ListTile(
@@ -250,13 +284,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: const Text('Settings'),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to settings
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                  );
                 },
               ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
-                title: const Text('Logout', style: TextStyle(color: Colors.red)),
+                title: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.red),
+                ),
                 onTap: () async {
                   Navigator.pop(context);
                   await _logout(context);
@@ -270,8 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', false);
+    await _sessionService.logout();
     if (context.mounted) {
       SnackbarHelper.showSuccess(context, 'Вы вышли');
       await Future.delayed(const Duration(milliseconds: 250));
@@ -282,4 +320,3 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 }
-

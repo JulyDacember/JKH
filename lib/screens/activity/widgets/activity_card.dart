@@ -58,11 +58,7 @@ class ActivityCard extends StatelessWidget {
               color: _getIconBackgroundColor(),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              activity.icon,
-              color: _getIconColor(),
-              size: 24,
-            ),
+            child: Icon(activity.icon, color: _getIconColor(), size: 24),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -85,8 +81,10 @@ class ActivityCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: activity.status.color.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -105,20 +103,14 @@ class ActivityCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   activity.description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   activity.timeAgo,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
                 ),
               ],
             ),
@@ -128,4 +120,3 @@ class ActivityCard extends StatelessWidget {
     );
   }
 }
-

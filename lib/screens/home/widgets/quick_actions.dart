@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../meters/meter_readings_screen.dart';
+import '../../payments/payments_screen.dart';
 import '../../requests/create_request_screen.dart';
+import '../../../widgets/snackbar_helper.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -28,7 +30,9 @@ class QuickActions extends StatelessWidget {
                 color: const Color(0xFF3B82F6),
                 onTap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const CreateRequestScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const CreateRequestScreen(),
+                    ),
                   );
                 },
               ),
@@ -59,7 +63,9 @@ class QuickActions extends StatelessWidget {
                 label: 'Make Payment',
                 color: const Color(0xFF10B981),
                 onTap: () {
-                  // TODO: Navigate to payment
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PaymentsScreen()),
+                  );
                 },
               ),
             ),
@@ -70,7 +76,10 @@ class QuickActions extends StatelessWidget {
                 label: 'Emergency',
                 color: const Color(0xFFEF4444),
                 onTap: () {
-                  // TODO: Handle emergency call
+                  SnackbarHelper.showError(
+                    context,
+                    'Экстренный вызов отправлен диспетчеру',
+                  );
                 },
               ),
             ),
@@ -111,11 +120,7 @@ class QuickActions extends StatelessWidget {
                 color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 28,
-              ),
+              child: Icon(icon, color: color, size: 28),
             ),
             const SizedBox(height: 8),
             Text(
@@ -133,4 +138,3 @@ class QuickActions extends StatelessWidget {
     );
   }
 }
-

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart';
+import '../../repositories/app_repository.dart';
 import '../../models/user.dart';
 import '../../widgets/header.dart';
 
@@ -12,8 +12,14 @@ class PaymentHistoryScreen extends StatefulWidget {
 
 class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
   late User _currentUser;
+  final AppRepository _repository = AppRepository.instance;
   String _selectedFilter = 'Все';
-  final List<String> _filterOptions = ['Все', 'Последний месяц', 'Последние 3 месяца', 'Последний год'];
+  final List<String> _filterOptions = [
+    'Все',
+    'Последний месяц',
+    'Последние 3 месяца',
+    'Последний год',
+  ];
 
   // Моковые данные платежей
   final List<Map<String, dynamic>> _payments = [
@@ -62,7 +68,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _currentUser = MockDataService.getCurrentUser();
+    _currentUser = _repository.getCurrentUser();
   }
 
   List<Map<String, dynamic>> get _filteredPayments {
@@ -85,7 +91,9 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         return _payments;
     }
 
-    return _payments.where((payment) => payment['date'].isAfter(cutoffDate)).toList();
+    return _payments
+        .where((payment) => payment['date'].isAfter(cutoffDate))
+        .toList();
   }
 
   IconData _getPaymentIcon(String type) {
@@ -163,7 +171,10 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                       ),
                       const Spacer(),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
@@ -202,11 +213,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.payment,
-                                size: 64,
-                                color: Colors.grey,
-                              ),
+                              Icon(Icons.payment, size: 64, color: Colors.grey),
                               SizedBox(height: 16),
                               Text(
                                 'Нет платежей за выбранный период',
@@ -244,7 +251,9 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                     width: 48,
                                     height: 48,
                                     decoration: BoxDecoration(
-                                      color: _getPaymentColor(payment['type']).withOpacity(0.1),
+                                      color: _getPaymentColor(
+                                        payment['type'],
+                                      ).withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
@@ -256,7 +265,8 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           payment['title'],
@@ -290,10 +300,17 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF10B981).withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color: const Color(
+                                            0xFF10B981,
+                                          ).withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: const Text(
                                           'Оплачено',

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'config/app_config.dart';
+import 'repositories/app_repository.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home/home_screen.dart';
+import 'services/session_service.dart';
 
 void main() {
+  AppRepository.instance.setDataSourceFromString(AppConfig.dataSourceValue);
   runApp(const ZhkhApp());
 }
 
@@ -36,6 +39,7 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _isLoading = true;
   bool _isAuthenticated = false;
+  final SessionService _sessionService = SessionService();
 
   @override
   void initState() {
@@ -44,8 +48,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   Future<void> _checkAuthStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    final isLoggedIn = await _sessionService.isLoggedIn();
     setState(() {
       _isAuthenticated = isLoggedIn;
       _isLoading = false;
@@ -55,12 +58,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return _isAuthenticated ? const HomeScreen() : const LoginScreen();
   }
 }
-

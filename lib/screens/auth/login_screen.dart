@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../home/home_screen.dart';
 import '../../widgets/snackbar_helper.dart';
+import '../../models/user.dart';
+import '../../services/session_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  final SessionService _sessionService = SessionService();
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -26,9 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // Имитация авторизации
       await Future.delayed(const Duration(seconds: 1));
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', true);
-      await prefs.setString('userEmail', _emailController.text);
+      final role = _resolveRole(_emailController.text);
+      await _sessionService.saveLogin(email: _emailController.text, role: role);
 
       if (mounted) {
         SnackbarHelper.showSuccess(context, 'Вход выполнен');
@@ -38,6 +39,14 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     }
+  }
+
+  UserRole _resolveRole(String email) {
+    final normalized = email.trim().toLowerCase();
+    if (normalized.startsWith('admin@') || normalized.contains('.admin@')) {
+      return UserRole.admin;
+    }
+    return UserRole.resident;
   }
 
   @override
@@ -96,10 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 8),
                     const Text(
                       'Вход в личный кабинет',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.white70),
                     ),
                     const SizedBox(height: 48),
                     // Email Field
@@ -182,7 +188,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Text(
                                 'Войти',
@@ -197,7 +205,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Forgot Password
                     TextButton(
                       onPressed: () {
-                        // TODO: Implement forgot password
+                        SnackbarHelper.showSuccess(
+                          context,
+                          'Инструкция по восстановлению отправлена на email',
+                        );
                       },
                       child: const Text(
                         'Забыли пароль?',
@@ -214,4 +225,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

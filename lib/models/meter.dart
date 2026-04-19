@@ -19,6 +19,30 @@ class Meter {
     this.isOverdue = false,
   });
 
+  factory Meter.fromJson(Map<String, dynamic> json) {
+    return Meter(
+      id: (json['id'] ?? '').toString(),
+      number: (json['number'] ?? '').toString(),
+      type: MeterTypeExtension.fromValue(json['type']?.toString()),
+      location: (json['location'] ?? '').toString(),
+      lastReading: (json['lastReading'] as num?)?.toDouble() ?? 0,
+      daysUntilDue: (json['daysUntilDue'] as num?)?.toInt() ?? 0,
+      isOverdue: json['isOverdue'] == true,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'number': number,
+      'type': type.displayName,
+      'location': location,
+      'lastReading': lastReading,
+      'daysUntilDue': daysUntilDue,
+      'isOverdue': isOverdue,
+    };
+  }
+
   String get dueText {
     if (isOverdue) {
       return 'Due: ${daysUntilDue.abs()} days ago';
@@ -32,11 +56,7 @@ class Meter {
   String get formattedReading => lastReading.toStringAsFixed(2);
 }
 
-enum MeterType {
-  electricity,
-  water,
-  gas,
-}
+enum MeterType { electricity, water, gas }
 
 extension MeterTypeExtension on MeterType {
   String get displayName {
@@ -82,5 +102,17 @@ extension MeterTypeExtension on MeterType {
         return Icons.local_fire_department;
     }
   }
-}
 
+  static MeterType fromValue(String? value) {
+    switch ((value ?? '').toUpperCase()) {
+      case 'ELECTRICITY':
+        return MeterType.electricity;
+      case 'WATER':
+        return MeterType.water;
+      case 'GAS':
+        return MeterType.gas;
+      default:
+        return MeterType.electricity;
+    }
+  }
+}

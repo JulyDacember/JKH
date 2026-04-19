@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart';
+import '../../repositories/app_repository.dart';
 import '../../models/request.dart';
 import '../../widgets/header.dart';
 import '../../widgets/snackbar_helper.dart';
@@ -13,6 +13,7 @@ class AdminRequestsScreen extends StatefulWidget {
 
 class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
   late List<MaintenanceRequest> _requests;
+  final AppRepository _repository = AppRepository.instance;
 
   @override
   void initState() {
@@ -21,10 +22,13 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
   }
 
   void _loadRequests() {
-    _requests = MockDataService.getRequests();
+    _requests = _repository.getRequests();
   }
 
-  void _updateRequestStatus(MaintenanceRequest request, RequestStatus newStatus) {
+  void _updateRequestStatus(
+    MaintenanceRequest request,
+    RequestStatus newStatus,
+  ) {
     setState(() {
       // В реальном приложении здесь был бы API вызов
       // Пока просто обновляем локально
@@ -37,7 +41,8 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
           status: newStatus,
           createdAt: request.createdAt,
           location: request.location,
-          completedAt: newStatus == RequestStatus.completed ? DateTime.now() : null,
+          completedAt:
+              newStatus == RequestStatus.completed ? DateTime.now() : null,
         );
       }
     });
@@ -50,10 +55,7 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
     return Scaffold(
       body: Column(
         children: [
-          AppHeader(
-            user: MockDataService.getCurrentUser(),
-            showBackButton: true,
-          ),
+          AppHeader(user: _repository.getCurrentUser(), showBackButton: true),
           Expanded(
             child: Column(
               children: [
@@ -135,10 +137,7 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
           const SizedBox(height: 8),
           Text(
             request.description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
           const SizedBox(height: 8),
           Row(
@@ -147,20 +146,14 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
               const SizedBox(width: 4),
               Text(
                 request.location,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               const Spacer(),
               const Icon(Icons.access_time, size: 16, color: Colors.grey),
               const SizedBox(width: 4),
               Text(
                 _formatDate(request.createdAt),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),

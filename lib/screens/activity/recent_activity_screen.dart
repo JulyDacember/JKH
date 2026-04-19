@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart';
+import '../../repositories/app_repository.dart';
 import '../../models/user.dart';
 import '../../models/activity.dart';
 import '../../widgets/header.dart';
@@ -15,6 +15,7 @@ class RecentActivityScreen extends StatefulWidget {
 class _RecentActivityScreenState extends State<RecentActivityScreen> {
   late User _currentUser;
   late List<Activity> _activities;
+  final AppRepository _repository = AppRepository.instance;
 
   @override
   void initState() {
@@ -23,8 +24,8 @@ class _RecentActivityScreenState extends State<RecentActivityScreen> {
   }
 
   void _loadData() {
-    _currentUser = MockDataService.getCurrentUser();
-    _activities = MockDataService.getRecentActivities();
+    _currentUser = _repository.getCurrentUser();
+    _activities = _repository.getRecentActivities();
   }
 
   @override
@@ -81,4 +82,3 @@ class _RecentActivityScreenState extends State<RecentActivityScreen> {
     );
   }
 }
-

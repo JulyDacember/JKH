@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../services/mock_data_service.dart';
+import '../../../repositories/app_repository.dart';
 import '../../../models/request.dart';
 
 class AdminStatsCard extends StatelessWidget {
@@ -7,15 +7,19 @@ class AdminStatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final requests = MockDataService.getRequests();
-    final users = [MockDataService.getCurrentUser()]; // В реальности список пользователей
-    final balance = MockDataService.getCurrentBalance();
-    final meters = MockDataService.getMeters();
+    final repository = AppRepository.instance;
+    final requests = repository.getRequests();
+    final users = [
+      repository.getCurrentUser(),
+    ]; // В реальности список пользователей
+    final balance = repository.getCurrentBalance();
+    final meters = repository.getMeters();
 
-    final pendingRequests = requests.where((r) => r.status.displayName == 'PENDING').length;
+    final pendingRequests =
+        requests.where((r) => r.status.displayName == 'PENDING').length;
     final totalUsers = users.length;
     final overdueBalances = balance.amount > 0 ? 1 : 0; // Упрощенная логика
-    final pendingMeters = MockDataService.getPendingMeterCount();
+    final pendingMeters = repository.getPendingMeterCount();
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -117,10 +121,7 @@ class AdminStatsCard extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: Colors.grey,
-          ),
+          style: const TextStyle(fontSize: 10, color: Colors.grey),
           textAlign: TextAlign.center,
         ),
       ],

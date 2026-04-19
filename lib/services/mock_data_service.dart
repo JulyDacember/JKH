@@ -12,20 +12,12 @@ class MockDataService {
       name: 'Иван Иванов',
       email: 'ivan@example.com',
       phone: '+7 (999) 123-45-67',
-      property: Property(
-        id: '1',
-        name: 'Sunset Apartments',
-        unit: 'Unit 4B',
-      ),
+      property: Property(id: '1', name: 'Sunset Apartments', unit: 'Unit 4B'),
     );
   }
 
   static Balance getCurrentBalance() {
-    return Balance(
-      amount: 1250.00,
-      status: 'CURRENT',
-      daysUntilDue: 14,
-    );
+    return Balance(amount: 1250.00, status: 'CURRENT', daysUntilDue: 14);
   }
 
   static List<MaintenanceRequest> getRequests() {
@@ -151,4 +143,3 @@ class MockDataService {
     return getMeters().where((m) => m.daysUntilDue <= 2 || m.isOverdue).length;
   }
 }
-

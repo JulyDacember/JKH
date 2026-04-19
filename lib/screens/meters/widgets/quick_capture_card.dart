@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class QuickCaptureCard extends StatelessWidget {
-  const QuickCaptureCard({super.key});
+  final VoidCallback onCapture;
+  final String? selectedPhotoName;
+
+  const QuickCaptureCard({
+    super.key,
+    required this.onCapture,
+    this.selectedPhotoName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,20 +38,35 @@ class QuickCaptureCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          const Expanded(
-            child: Text(
-              'Quick Camera Capture',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF1E3A8A),
-              ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Quick Camera Capture',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF1E3A8A),
+                  ),
+                ),
+                if (selectedPhotoName != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    selectedPhotoName!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              // TODO: Open camera
-            },
+            onPressed: onCapture,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFFFA500),
               foregroundColor: Colors.white,
@@ -55,10 +77,7 @@ class QuickCaptureCard extends StatelessWidget {
             ),
             child: const Text(
               'Capture',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -66,4 +85,3 @@ class QuickCaptureCard extends StatelessWidget {
     );
   }
 }
-

@@ -3,8 +3,9 @@ import '../../../models/meter.dart';
 
 class MeterCard extends StatelessWidget {
   final Meter meter;
+  final VoidCallback? onCaptureTap;
 
-  const MeterCard({super.key, required this.meter});
+  const MeterCard({super.key, required this.meter, this.onCaptureTap});
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +32,7 @@ class MeterCard extends StatelessWidget {
               color: meter.type.backgroundColor,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              meter.type.icon,
-              color: meter.type.iconColor,
-              size: 32,
-            ),
+            child: Icon(meter.type.icon, color: meter.type.iconColor, size: 32),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -53,26 +50,17 @@ class MeterCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'Meter #${meter.number}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   meter.location,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Last: ${meter.formattedReading}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -82,8 +70,10 @@ class MeterCard extends StatelessWidget {
             children: [
               if (meter.isOverdue)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -103,16 +93,15 @@ class MeterCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   color: meter.isOverdue ? Colors.red : Colors.grey,
-                  fontWeight: meter.isOverdue ? FontWeight.bold : FontWeight.normal,
+                  fontWeight:
+                      meter.isOverdue ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
               const SizedBox(height: 8),
               IconButton(
                 icon: const Icon(Icons.camera_alt_outlined),
                 color: const Color(0xFF1E3A8A),
-                onPressed: () {
-                  // TODO: Open camera for meter reading
-                },
+                onPressed: onCaptureTap,
               ),
             ],
           ),
@@ -121,4 +110,3 @@ class MeterCard extends StatelessWidget {
     );
   }
 }
-

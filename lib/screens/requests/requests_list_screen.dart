@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart' as mock;
+import '../../repositories/app_repository.dart';
 import '../../models/request.dart';
 import '../../widgets/header.dart';
 
@@ -8,8 +8,9 @@ class RequestsListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final requests = mock.MockDataService.getRequests();
-    final user = mock.MockDataService.getCurrentUser();
+    final repository = AppRepository.instance;
+    final requests = repository.getRequests();
+    final user = repository.getCurrentUser();
 
     return Scaffold(
       body: Column(
@@ -62,7 +63,10 @@ class RequestsListScreen extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: request.status.color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -81,10 +85,7 @@ class RequestsListScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             request.description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
           const SizedBox(height: 8),
           Row(
@@ -93,18 +94,12 @@ class RequestsListScreen extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 request.location,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               const Spacer(),
               Text(
                 'Created: ${_formatDate(request.createdAt)}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),
@@ -126,4 +121,3 @@ class RequestsListScreen extends StatelessWidget {
     }
   }
 }
-

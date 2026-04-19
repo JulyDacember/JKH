@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart';
+import '../../repositories/app_repository.dart';
 import '../../widgets/header.dart';
 import 'payment_history_screen.dart';
 
@@ -8,8 +8,9 @@ class PaymentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = MockDataService.getCurrentUser();
-    final balance = MockDataService.getCurrentBalance();
+    final repository = AppRepository.instance;
+    final user = repository.getCurrentUser();
+    final balance = repository.getCurrentBalance();
 
     return Scaffold(
       body: Column(
@@ -33,10 +34,7 @@ class PaymentsScreen extends StatelessWidget {
                       children: [
                         const Text(
                           'Current Balance',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -65,7 +63,9 @@ class PaymentsScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const PaymentHistoryScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const PaymentHistoryScreen(),
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -151,10 +151,7 @@ class PaymentsScreen extends StatelessWidget {
               color: const Color(0xFF10B981).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.payment,
-              color: Color(0xFF10B981),
-            ),
+            child: const Icon(Icons.payment, color: Color(0xFF10B981)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -172,10 +169,7 @@ class PaymentsScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -214,4 +208,3 @@ class PaymentsScreen extends StatelessWidget {
     );
   }
 }
-

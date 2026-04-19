@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/profile_screen.dart';
 import '../screens/admin/admin_screen.dart';
+import '../services/session_service.dart';
 
 class AppHeader extends StatelessWidget {
+  static final SessionService _sessionService = SessionService();
   final User user;
   final bool showBackButton;
 
-  const AppHeader({
-    super.key,
-    required this.user,
-    this.showBackButton = false,
-  });
+  const AppHeader({super.key, required this.user, this.showBackButton = false});
 
   void _showProfileMenu(BuildContext context) {
     showModalBottomSheet(
@@ -21,39 +18,53 @@ class AppHeader extends StatelessWidget {
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Profile'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.admin_panel_settings),
-                title: const Text('Админ панель'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const AdminScreen()),
-                  );
-                },
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.logout, color: Colors.red),
-                title: const Text('Logout', style: TextStyle(color: Colors.red)),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await _logout(context);
-                },
-              ),
-            ],
+          child: FutureBuilder<UserRole>(
+            future: _sessionService.getCurrentRole(),
+            builder: (context, snapshot) {
+              final role = snapshot.data ?? UserRole.resident;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.person),
+                    title: const Text('Profile'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ProfileScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  if (role == UserRole.admin)
+                    ListTile(
+                      leading: const Icon(Icons.admin_panel_settings),
+                      title: const Text('Админ панель'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const AdminScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  const Divider(),
+                  ListTile(
+                    leading: const Icon(Icons.logout, color: Colors.red),
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await _logout(context);
+                    },
+                  ),
+                ],
+              );
+            },
           ),
         );
       },
@@ -61,8 +72,7 @@ class AppHeader extends StatelessWidget {
   }
 
   Future<void> _logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', false);
+    await _sessionService.logout();
     if (context.mounted) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -91,10 +101,7 @@ class AppHeader extends StatelessWidget {
                 children: [
                   const Text(
                     'Current Property',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                   Row(
                     children: [
@@ -107,10 +114,7 @@ class AppHeader extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.white,
-                      ),
+                      const Icon(Icons.arrow_drop_down, color: Colors.white),
                     ],
                   ),
                 ],
@@ -164,4 +168,3 @@ class AppHeader extends StatelessWidget {
     );
   }
 }
-

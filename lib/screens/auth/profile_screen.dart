@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart';
+import '../../repositories/app_repository.dart';
 import '../../models/user.dart';
 import '../../widgets/header.dart';
 import '../../widgets/snackbar_helper.dart';
@@ -13,6 +13,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late User _currentUser;
+  final AppRepository _repository = AppRepository.instance;
   bool _isEditing = false;
   final _formKey = GlobalKey<FormState>();
 
@@ -32,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _currentUser = MockDataService.getCurrentUser();
+    _currentUser = _repository.getCurrentUser();
     _initializeControllers();
   }
 
@@ -40,7 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nameController = TextEditingController(text: _currentUser.name);
     _emailController = TextEditingController(text: _currentUser.email);
     _phoneController = TextEditingController(text: _currentUser.phone);
-    _addressController = TextEditingController(text: _currentUser.property.fullAddress);
+    _addressController = TextEditingController(
+      text: _currentUser.property.fullAddress,
+    );
   }
 
   @override
@@ -109,10 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 8),
                   const Text(
                     'Управление личными данными',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                   const SizedBox(height: 24),
 
@@ -255,13 +255,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: _isEditing ? _saveProfile : () => setState(() => _isEditing = true),
+                                onPressed: _isEditing
+                                    ? _saveProfile
+                                    : () => setState(() => _isEditing = true),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF1E3A8A),
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
                                 ),
-                                child: Text(_isEditing ? 'Сохранить' : 'Редактировать'),
+                                child: Text(
+                                  _isEditing ? 'Сохранить' : 'Редактировать',
+                                ),
                               ),
                             ),
                             if (_isEditing) ...[
@@ -276,7 +282,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   },
                                   style: OutlinedButton.styleFrom(
                                     side: const BorderSide(color: Colors.grey),
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
                                   ),
                                   child: const Text('Отмена'),
                                 ),
@@ -317,10 +325,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: const Icon(Icons.lock, color: Color(0xFF1E3A8A)),
+                          leading: const Icon(
+                            Icons.lock,
+                            color: Color(0xFF1E3A8A),
+                          ),
                           title: const Text('Сменить пароль'),
                           trailing: Icon(
-                            _showPasswordForm ? Icons.expand_less : Icons.expand_more,
+                            _showPasswordForm
+                                ? Icons.expand_less
+                                : Icons.expand_more,
                             color: Colors.grey,
                           ),
                           onTap: () {
@@ -394,7 +407,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF10B981),
                                       foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
                                     ),
                                     child: const Text('Сменить пароль'),
                                   ),

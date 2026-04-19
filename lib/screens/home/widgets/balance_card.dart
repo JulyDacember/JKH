@@ -38,10 +38,7 @@ class _BalanceCardState extends State<BalanceCard>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: _buildCard(),
-    );
+    return FadeTransition(opacity: _fadeAnimation, child: _buildCard());
   }
 
   Widget _buildCard() {
@@ -94,14 +91,15 @@ class _BalanceCardState extends State<BalanceCard>
   }
 
   Container _buildStatusLabel() {
+    final status = widget.balance.status.trim().toUpperCase();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF10B981),
+        color: _statusColor(status),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Text(
-        'CURRENT',
+      child: Text(
+        status.isEmpty ? 'UNKNOWN' : status,
         style: TextStyle(
           color: Colors.white,
           fontSize: 10,
@@ -109,6 +107,21 @@ class _BalanceCardState extends State<BalanceCard>
         ),
       ),
     );
+  }
+
+  Color _statusColor(String status) {
+    switch (status) {
+      case 'OVERDUE':
+      case 'DEBT':
+        return const Color(0xFFEF4444);
+      case 'PENDING':
+      case 'DUE_SOON':
+        return const Color(0xFFFFA500);
+      case 'CURRENT':
+      case 'PAID':
+      default:
+        return const Color(0xFF10B981);
+    }
   }
 
   Text _buildBalanceText() {
@@ -125,18 +138,11 @@ class _BalanceCardState extends State<BalanceCard>
   Row _buildDueText() {
     return Row(
       children: [
-        const Icon(
-          Icons.access_time,
-          size: 16,
-          color: Colors.grey,
-        ),
+        const Icon(Icons.access_time, size: 16, color: Colors.grey),
         const SizedBox(width: 4),
         Text(
           widget.balance.dueText,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
         ),
       ],
     );

@@ -19,6 +19,31 @@ class Activity {
     required this.icon,
   });
 
+  factory Activity.fromJson(Map<String, dynamic> json) {
+    final type = ActivityTypeExtension.fromValue(json['type']?.toString());
+    return Activity(
+      id: (json['id'] ?? '').toString(),
+      title: (json['title'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      status: ActivityStatusExtension.fromValue(json['status']?.toString()),
+      timestamp: DateTime.tryParse((json['timestamp'] ?? '').toString()) ??
+          DateTime.now(),
+      type: type,
+      icon: ActivityTypeExtension.defaultIcon(type),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'title': title,
+      'description': description,
+      'status': status.displayName,
+      'timestamp': timestamp.toIso8601String(),
+      'type': type.name.toUpperCase(),
+    };
+  }
+
   String get timeAgo {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
@@ -33,12 +58,7 @@ class Activity {
   }
 }
 
-enum ActivityStatus {
-  pending,
-  inProgress,
-  completed,
-  success,
-}
+enum ActivityStatus { pending, inProgress, completed, success }
 
 extension ActivityStatusExtension on ActivityStatus {
   String get displayName {
@@ -66,12 +86,51 @@ extension ActivityStatusExtension on ActivityStatus {
         return const Color(0xFF10B981);
     }
   }
+
+  static ActivityStatus fromValue(String? value) {
+    switch ((value ?? '').toUpperCase()) {
+      case 'PENDING':
+        return ActivityStatus.pending;
+      case 'IN_PROGRESS':
+        return ActivityStatus.inProgress;
+      case 'COMPLETED':
+        return ActivityStatus.completed;
+      case 'SUCCESS':
+        return ActivityStatus.success;
+      default:
+        return ActivityStatus.pending;
+    }
+  }
 }
 
-enum ActivityType {
-  request,
-  payment,
-  meter,
-  maintenance,
-}
+enum ActivityType { request, payment, meter, maintenance }
 
+extension ActivityTypeExtension on ActivityType {
+  static ActivityType fromValue(String? value) {
+    switch ((value ?? '').toUpperCase()) {
+      case 'REQUEST':
+        return ActivityType.request;
+      case 'PAYMENT':
+        return ActivityType.payment;
+      case 'METER':
+        return ActivityType.meter;
+      case 'MAINTENANCE':
+        return ActivityType.maintenance;
+      default:
+        return ActivityType.request;
+    }
+  }
+
+  static IconData defaultIcon(ActivityType type) {
+    switch (type) {
+      case ActivityType.request:
+        return Icons.document_scanner;
+      case ActivityType.payment:
+        return Icons.payment;
+      case ActivityType.meter:
+        return Icons.speed;
+      case ActivityType.maintenance:
+        return Icons.build;
+    }
+  }
+}

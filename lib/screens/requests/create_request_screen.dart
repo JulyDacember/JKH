@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart';
+import '../../repositories/app_repository.dart';
 import '../../widgets/header.dart';
 import '../../widgets/snackbar_helper.dart';
 
@@ -16,7 +16,9 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
   bool _isLoading = false;
-  List<String> _selectedPhotos = []; // В реальном приложении это будут пути к файлам
+  List<String> _selectedPhotos =
+      []; // В реальном приложении это будут пути к файлам
+  final AppRepository _repository = AppRepository.instance;
 
   final List<String> _locationOptions = [
     'Кухня',
@@ -25,7 +27,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     'Спальня',
     'Коридор',
     'Балкон',
-    'Другое'
+    'Другое',
   ];
 
   @override
@@ -73,10 +75,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     return Scaffold(
       body: Column(
         children: [
-          AppHeader(
-            user: MockDataService.getCurrentUser(),
-            showBackButton: true,
-          ),
+          AppHeader(user: _repository.getCurrentUser(), showBackButton: true),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
@@ -96,10 +95,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                     const SizedBox(height: 8),
                     const Text(
                       'Опишите проблему и прикрепите фото',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 24),
 
@@ -197,7 +193,9 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                                 color: Colors.grey[200],
                                 borderRadius: BorderRadius.circular(8),
                                 image: const DecorationImage(
-                                  image: AssetImage('assets/images/placeholder.jpg'), // Заглушка
+                                  image: AssetImage(
+                                    'assets/images/placeholder.jpg',
+                                  ), // Заглушка
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -275,7 +273,9 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               )
                             : const Text(
