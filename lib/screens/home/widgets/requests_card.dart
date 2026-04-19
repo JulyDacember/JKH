@@ -12,8 +12,8 @@ class RequestsCard extends StatefulWidget {
 
 class _RequestsCardState extends State<RequestsCard>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
+  late final AnimationController _animationController;
+  late final Animation<double> _fadeAnimation;
 
   @override
   void initState() {
@@ -34,82 +34,98 @@ class _RequestsCardState extends State<RequestsCard>
     super.dispose();
   }
 
-  int _getCountByStatus(RequestStatus status) {
-    return widget.requests.where((r) => r.status == status).length;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final total = widget.requests.length;
-    final pending = _getCountByStatus(RequestStatus.pending);
-    final inProgress = _getCountByStatus(RequestStatus.inProgress);
-    final completed = _getCountByStatus(RequestStatus.completed);
-
+    final statusCounts = _getRequestsCountByStatus();
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Active Requests',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E3A8A),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatItem(
+                  value: statusCounts['total']!.toString(),
+                  label: 'Total',
+                  valueColor: const Color(0xFF1E3A8A),
                 ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: Colors.grey,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildStatItem(
-                value: total.toString(),
-                label: 'Total',
-                valueColor: const Color(0xFF1E3A8A),
-              ),
-              _buildStatItem(
-                value: pending.toString(),
-                label: 'Pending',
-                valueColor: const Color(0xFFFFA500),
-              ),
-              _buildStatItem(
-                value: inProgress.toString(),
-                label: 'In Progress',
-                valueColor: const Color(0xFF1E3A8A),
-              ),
-              _buildStatItem(
-                value: completed.toString(),
-                label: 'Completed',
-                valueColor: const Color(0xFF10B981),
-              ),
-            ],
-          ),
-        ],
+                _buildStatItem(
+                  value: statusCounts['pending']!.toString(),
+                  label: 'Pending',
+                  valueColor: const Color(0xFFFFA500),
+                ),
+                _buildStatItem(
+                  value: statusCounts['inProgress']!.toString(),
+                  label: 'In Progress',
+                  valueColor: const Color(0xFF1E3A8A),
+                ),
+                _buildStatItem(
+                  value: statusCounts['completed']!.toString(),
+                  label: 'Completed',
+                  valueColor: const Color(0xFF10B981),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Map<String, int> _getRequestsCountByStatus() {
+    final total = widget.requests.length;
+    final pending =
+        widget.requests.where((r) => r.status == RequestStatus.pending).length;
+    final inProgress = widget.requests
+        .where((r) => r.status == RequestStatus.inProgress)
+        .length;
+    final completed = widget.requests
+        .where((r) => r.status == RequestStatus.completed)
+        .length;
+
+    return {
+      'total': total,
+      'pending': pending,
+      'inProgress': inProgress,
+      'completed': completed,
+    };
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: const [
+        Text(
+          'Active Requests',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1E3A8A),
+          ),
+        ),
+        Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: Colors.grey,
+        ),
+      ],
     );
   }
 
@@ -140,4 +156,3 @@ class _RequestsCardState extends State<RequestsCard>
     );
   }
 }
-
